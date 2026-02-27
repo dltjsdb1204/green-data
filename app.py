@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-# 1. 페이지 설정 및 기억장치(session_state) 세팅
+# 1. 페이지 설정 및 초기화
 st.set_page_config(page_title="그린데이터", layout="wide")
 
-# 사용자의 상태를 기억하는 공간 (개인 진단 결과 or 단체 목적)
 if 'user_condition' not in st.session_state:
     st.session_state.user_condition = "미진단"
 
@@ -20,7 +19,7 @@ menu = st.sidebar.radio(
 # ==========================================
 if menu == "홈 (서비스 소개)":
     st.header("농업이 치료가 되다, 그린데이터")
-    st.markdown("### 일상에 활기를 불어넣어주는 치유 농업을 경험하세요.")
+    st.markdown("### 대한민국은 OECD 국가 중 우울증 유병률 1위입니다.")
     st.write("그린데이터는 고령화로 인한 노인 고립 문제와 2030 세대의 번아웃을 치유농업으로 해결하고자 합니다.")
     
     col1, col2, col3 = st.columns(3)
@@ -31,11 +30,10 @@ if menu == "홈 (서비스 소개)":
 # ==========================================
 # --- 탭 2: 자가진단 (상태 체크) ---
 # ==========================================
-elif menu == "자가진단":
+elif menu == "자가진단 (상태 체크)":
     st.header("🔍 방문 유형 및 상태 체크")
     st.write("맞춤형 농가 매칭을 위해 방문하실 유형을 먼저 선택해 주세요.")
 
-    # 개인/단체 분기 선택
     visit_type = st.radio(
         "방문 유형이 어떻게 되시나요?", 
         ["👤 개인 (맞춤형 심리 치유 진단)", "👥 단체 (기관/학교/회사 현장체험)"], 
@@ -48,29 +46,19 @@ elif menu == "자가진단":
     # ------------------------------------------
     if visit_type == "👥 단체 (기관/학교/회사 현장체험)":
         st.subheader("👥 단체 방문 맞춤형 큐레이션")
-        st.write("소속 기관과 희망하는 체험 목적을 선택해 주시면 딱 맞는 농가를 추천해 드립니다.")
         
         with st.form("group_form"):
             group_kind = st.selectbox("소속 기관의 성격은 무엇인가요?", [
-                "학교/교육기관 (현장체험학습)", 
-                "지역아동센터/보육기관",
-                "노인복지관/요양시설",
-                "회사/기업 (워크샵)", 
-                "기타 친목 단체"
+                "학교/교육기관 (현장체험학습)", "지역아동센터/보육기관", "노인복지관/요양시설", "회사/기업 (워크샵)", "기타 친목 단체"
             ])
-            
             group_purpose = st.selectbox("가장 희망하는 핵심 프로그램은 무엇인가요?", [
-                "🌿 식물 교감 체험 (원예치료, 텃밭 가꾸기)", 
-                "🐇 동물 교감 체험 (먹이주기, 산책)", 
-                "🧘‍♂️ 자연 치유 및 휴식 (숲 명상, 산책)", 
-                "🤝 조직력 강화 워크샵 (팀빌딩, 치유식사)"
+                "🌿 식물 교감 체험 (원예치료, 텃밭 가꾸기)", "🐇 동물 교감 체험 (먹이주기, 산책)", 
+                "🧘‍♂️ 자연 치유 및 휴식 (숲 명상, 산책)", "🤝 조직력 강화 워크샵 (팀빌딩, 치유식사)"
             ])
-            
             group_submitted = st.form_submit_button("단체 맞춤 농장 찾기")
             
         if group_submitted:
-            st.success(f"'{group_kind}'을(를) 위한 맞춤 농장을 세팅했습니다! 상단의 '치유농가 소개' 탭을 확인해 주세요.")
-            
+            st.success("맞춤 농장을 세팅했습니다! 상단의 '치유농가 소개' 탭을 확인해 주세요.")
             if "식물" in group_purpose:
                 st.session_state.user_condition = "단체/식물체험"
             elif "동물" in group_purpose:
@@ -81,18 +69,14 @@ elif menu == "자가진단":
                 st.session_state.user_condition = "단체/워크샵"
 
     # ------------------------------------------
-    # [분기 2] 개인인 경우 화면 (기존 진단 문항)
+    # [분기 2] 개인인 경우 화면
     # ------------------------------------------
     else:
         st.subheader("👤 개인 맞춤형 심리 자가진단")
-        st.write("병원 및 심리상담센터에서 실제 사용하는 공신력 있는 문항입니다. 답변을 모두 체크하고 제출해 주세요.")
-
         diagnosis_type = st.tabs(["우울증 진단 (BDI)", "치매 선별 (S-SDQ)", "번아웃 증후군"])
 
-        # 1) 우울증 진단 (BDI 전체 21문항)
+        # 1) 우울증 진단
         with diagnosis_type[0]:
-            st.subheader("우울증 진단 (Beck Depression Inventory)")
-            
             bdi_questions = [
                 ["나는 슬프지 않다.", "나는 슬프다.", "나는 가끔 슬플 때가 있다.", "나는 항상 슬퍼서 그것을 떨쳐버릴 수가 없다."],
                 ["나는 앞날에 대해 별로 낙심하지 않는다.", "나는 앞날에 대해 비관적인 느낌이 든다.", "나는 앞날에 대해 기대할 것이 아무 것도 없다고 느낀다.", "나의 앞날은 아주 절망적이고 나아질 가능성이 없다고 느낀다."],
@@ -118,96 +102,62 @@ elif menu == "자가진단":
             ]
             
             with st.form("bdi_form"):
-                bdi_answers = []
-                for i, options in enumerate(bdi_questions):
-                    choice = st.radio(f"**{i+1}.**", options, key=f"bdi_{i}")
-                    bdi_answers.append(choice)
-                bdi_submitted = st.form_submit_button("우울증 결과 분석")
-                
-            if bdi_submitted:
-                bdi_score = sum([options.index(ans) for options, ans in zip(bdi_questions, bdi_answers)])
-                st.info(f"📊 BDI 총점: {bdi_score}점")
-                
-                if bdi_score >= 16:
-                    st.error("주의: 정신과 전문의와의 상의를 요합니다. '치유농가 소개' 탭에서 정서 안정 농장을 확인하세요.")
-                    st.session_state.user_condition = "우울/스트레스" 
-                else:
-                    st.success("양호: 우울감이 정상 범위입니다. '치유농가 소개' 탭에서 예방/휴식 농장을 확인하세요.")
-                    st.session_state.user_condition = "예방/휴식"
+                bdi_answers = [st.radio(f"**{i+1}.**", opts, key=f"bdi_{i}") for i, opts in enumerate(bdi_questions)]
+                if st.form_submit_button("우울증 결과 분석"):
+                    bdi_score = sum([opts.index(ans) for opts, ans in zip(bdi_questions, bdi_answers)])
+                    st.info(f"📊 BDI 총점: {bdi_score}점")
+                    if bdi_score >= 16:
+                        st.error("주의: 정신과 전문의와의 상의를 요합니다.")
+                        st.session_state.user_condition = "우울/스트레스" 
+                    else:
+                        st.success("양호: 우울감이 정상 범위입니다.")
+                        st.session_state.user_condition = "예방/휴식"
 
-        # 2) 치매 선별 진단 (S-SDQ 전체 15문항)
+        # 2) 치매 선별 진단
         with diagnosis_type[1]:
-            st.subheader("단축형 삼성 치매 선별 질문지 (S-SDQ)")
-            st.warning("⚠️ 반드시 환자가 아닌 환자의 상태를 잘 아는 보호자가 체크하여야 합니다.")
-            
             ssdq_questions = [
-                "1. 언제 어떤 일이 일어났는지 기억하지 못한다.",
-                "2. 며칠 전에 들었던 이야기를 잊는다.",
-                "3. 반복되는 일상생활에 변화가 생겼을 때 금방 적응하기가 힘들다.",
-                "4. 본인에게 중요한 사항을 잊는다. (예: 배우자 생일, 결혼기념일, 제삿날 등)",
-                "5. 어떤 일을 해놓고 잊어버려 다시 반복 한다.",
-                "6. 약속을 해놓고 잊는다.",
-                "7. 이야기 도중 방금 자기가 무슨 이야기를 하고 있었는지를 잊는다.",
-                "8. 하고 싶은 말이나 표현이 금방 떠오르지 않는다.",
-                "9. 물건 이름이 금방 생각나지 않는다.",
-                "10. 텔레비전을 보고 그 내용을 이해하기가 힘들다.",
-                "11. 전에 가본 장소를 기억하지 못한다.",
-                "12. 길을 잃거나 헤맨 적이 있다.",
-                "13. 계산능력이 떨어졌다.",
-                "14. 돈 관리를 하는데 실수가 있다.",
-                "15. 과거에 쓰던 기구의 사용이 서툴어졌다."
+                "1. 언제 어떤 일이 일어났는지 기억하지 못한다.", "2. 며칠 전에 들었던 이야기를 잊는다.",
+                "3. 반복되는 일상생활에 변화가 생겼을 때 금방 적응하기가 힘들다.", "4. 본인에게 중요한 사항을 잊는다.",
+                "5. 어떤 일을 해놓고 잊어버려 다시 반복 한다.", "6. 약속을 해놓고 잊는다.",
+                "7. 이야기 도중 방금 자기가 무슨 이야기를 하고 있었는지를 잊는다.", "8. 하고 싶은 말이나 표현이 금방 떠오르지 않는다.",
+                "9. 물건 이름이 금방 생각나지 않는다.", "10. 텔레비전을 보고 그 내용을 이해하기가 힘들다.",
+                "11. 전에 가본 장소를 기억하지 못한다.", "12. 길을 잃거나 헤맨 적이 있다.",
+                "13. 계산능력이 떨어졌다.", "14. 돈 관리를 하는데 실수가 있다.", "15. 과거에 쓰던 기구의 사용이 서툴어졌다."
             ]
-            ssdq_options = {"그렇지 않다": 0, "간혹(약간) 그렇다": 1, "자주(많이) 그렇다": 2}
+            ssdq_opts = ["그렇지 않다", "간혹(약간) 그렇다", "자주(많이) 그렇다"]
             
             with st.form("ssdq_form"):
-                ssdq_answers = []
-                for i, q in enumerate(ssdq_questions):
-                    choice = st.select_slider(q, options=list(ssdq_options.keys()), key=f"ssdq_{i}")
-                    ssdq_answers.append(choice)
-                ssdq_submitted = st.form_submit_button("치매 선별 결과 확인")
-                
-            if ssdq_submitted:
-                ssdq_score = sum([ssdq_options[ans] for ans in ssdq_answers])
-                st.info(f"📊 S-SDQ 총점: {ssdq_score}점")
-                
-                if ssdq_score >= 8:
-                    st.error("치매 의심: 보호자와 함께 전문의와 상의하시기 바랍니다. '치유농가 소개' 탭에서 인지 특화 농장을 확인하세요.")
-                    st.session_state.user_condition = "치매 위험군"
-                else:
-                    st.success("양호: 정상 범위 내에 있습니다.")
-                    st.session_state.user_condition = "예방/휴식"
+                ssdq_answers = [st.select_slider(q, options=ssdq_opts, key=f"ssdq_{i}") for i, q in enumerate(ssdq_questions)]
+                if st.form_submit_button("치매 선별 결과 확인"):
+                    ssdq_score = sum([ssdq_opts.index(ans) for ans in ssdq_answers])
+                    st.info(f"📊 S-SDQ 총점: {ssdq_score}점")
+                    if ssdq_score >= 8:
+                        st.error("치매 의심: 전문의와 상의하시기 바랍니다.")
+                        st.session_state.user_condition = "치매 위험군"
+                    else:
+                        st.success("양호: 정상 범위 내에 있습니다.")
+                        st.session_state.user_condition = "예방/휴식"
 
-        # 3) 번아웃 진단 (마음소풍 6문항)
+        # 3) 번아웃 진단
         with diagnosis_type[2]:
-            st.subheader("번아웃 증후군 자가진단")
-            
-            burnout_questions = [
-                "1. 출근하는 생각만 해도 짜증과 함께 가슴이 답답함을 느낀다.",
-                "2. 직장에서 칭찬을 들어도 썩 즐거운 기분이 들지 않는다.",
-                "3. 직장생활 외에 개인적인 생활이나 시간이 거의 없다.",
-                "4. 기력이 없고 쇠약해진 느낌이 든다.",
-                "5. 일하는 것에 심적 부담과 자신의 한계를 느낀다.",
-                "6. 충분한 시간의 잠을 자도 계속 피곤함을 느낀다."
+            bo_questions = [
+                "1. 출근하는 생각만 해도 짜증과 함께 가슴이 답답함을 느낀다.", "2. 직장에서 칭찬을 들어도 썩 즐거운 기분이 들지 않는다.",
+                "3. 직장생활 외에 개인적인 생활이나 시간이 거의 없다.", "4. 기력이 없고 쇠약해진 느낌이 든다.",
+                "5. 일하는 것에 심적 부담과 자신의 한계를 느낀다.", "6. 충분한 시간의 잠을 자도 계속 피곤함을 느낀다."
             ]
-            bo_options = {"아니다": 0, "가끔 그렇다": 1, "자주 그렇다": 2}
+            bo_opts = ["아니다", "가끔 그렇다", "자주 그렇다"]
             
             with st.form("bo_form"):
-                bo_answers = []
-                for i, q in enumerate(burnout_questions):
-                    choice = st.radio(q, list(bo_options.keys()), key=f"bo_{i}", horizontal=True)
-                    bo_answers.append(choice)
-                bo_submitted = st.form_submit_button("번아웃 지수 확인")
-                
-            if bo_submitted:
-                bo_score = sum([bo_options[ans] for ans in bo_answers])
-                st.info(f"📊 번아웃 점수: {bo_score}점")
-                
-                if bo_score >= 6:
-                    st.warning("번아웃 경고: 신체적, 정신적 피로감이 높습니다. '치유농가 소개' 탭에서 힐링 농장을 확인하세요.")
-                    st.session_state.user_condition = "번아웃"
-                else:
-                    st.success("양호: 에너지를 잘 관리하고 계십니다.")
-                    st.session_state.user_condition = "예방/휴식"
+                bo_answers = [st.radio(q, bo_opts, key=f"bo_{i}", horizontal=True) for i, q in enumerate(bo_questions)]
+                if st.form_submit_button("번아웃 지수 확인"):
+                    bo_score = sum([bo_opts.index(ans) for ans in bo_answers])
+                    st.info(f"📊 번아웃 점수: {bo_score}점")
+                    if bo_score >= 6:
+                        st.warning("번아웃 경고: 휴식이 필요합니다.")
+                        st.session_state.user_condition = "번아웃"
+                    else:
+                        st.success("양호: 에너지를 잘 관리하고 계십니다.")
+                        st.session_state.user_condition = "예방/휴식"
 
 # ==========================================
 # --- 탭 3: 치유농가 소개 (매칭) ---
@@ -215,7 +165,6 @@ elif menu == "자가진단":
 elif menu == "치유농가 소개 (매칭)":
     st.header("🏡 맞춤형 치유농장 큐레이션")
     
-    # [핵심] 개인 진단 키워드와 단체 키워드를 모두 포함하도록 업데이트된 전남 농가 데이터
     farms_data = pd.DataFrame([
         {"농장명": "명하쪽빛마을", "지역": "전남 나주", "핵심프로그램": "전통 쪽 염색, 소일거리 제공", "추천대상": "우울/스트레스, 단체/워크샵, 단체/휴식명상", "보유전문성": "조달청 치유프로그램 등록", "편의시설": "숙박 시설, 마을 식당"},
         {"농장명": "화탑영농조합법인", "지역": "전남 나주", "핵심프로그램": "허브 재배 및 원예 상품 제작", "추천대상": "치매 위험군, 단체/식물체험", "보유전문성": "장애인종합복지관 협력(사회적 농업)", "편의시설": "허브 전용 농장, 다목적 체험장"},
@@ -228,20 +177,16 @@ elif menu == "치유농가 소개 (매칭)":
     current_condition = st.session_state.user_condition
 
     if current_condition == "미진단":
-        st.warning("앗! 아직 자가진단 또는 방문 목적 선택을 하지 않으셨네요. 정확한 매칭을 위해 먼저 체크해주세요.")
-        st.write("아래는 등록된 우수 치유농가 전체 목록입니다.")
-        st.dataframe(farms_data[["농장명", "지역", "핵심프로그램", "보유전문성"]]) # 전체 목록 간략히 보기
+        st.warning("정확한 매칭을 위해 먼저 자가진단 또는 방문 목적을 체크해주세요.")
+        st.dataframe(farms_data[["농장명", "지역", "핵심프로그램", "보유전문성"]])
         
     else:
         st.success(f"현재 고객님의 키워드 **'{current_condition}'** 에 딱 맞는 농가를 찾았습니다!")
-        
-        # [핵심] '추천대상' 문자열 안에 사용자의 상태(current_condition)가 포함(contains)되어 있으면 매칭!
         matched_farms = farms_data[farms_data["추천대상"].str.contains(current_condition, na=False)]
         
         if len(matched_farms) == 0:
-            st.info("해당 조건에 맞는 특화 농장을 준비 중입니다. 조만간 업데이트될 예정입니다!")
+            st.info("해당 조건에 맞는 특화 농장을 준비 중입니다.")
         else:
-            # 농가 정보 카드 형태로 출력
             for index, row in matched_farms.iterrows():
                 with st.container():
                     st.markdown(f"### 🌿 {row['농장명']} ({row['지역']})")
