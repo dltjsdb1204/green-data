@@ -22,7 +22,7 @@ if menu == "홈":
     st.markdown("### 일생에 활력을 불어넣는 치유농업을 경험하세요.")
     st.write("그린데이터는 고령화로 인한 노인 고립 문제와 2030 세대의 번아웃을 치유농업으로 해결하고자 합니다.")
     
-   st.markdown("---") # 구분선 추가
+    st.markdown("---") # 구분선 추가
     
     col1, col2, col3 = st.columns(3)
     
